@@ -4,10 +4,9 @@ author: Freckle
 inputs:
   ref:
     description: |
-      The ref to poll status checks on. Can be a branch name (e.g. for PRs) or a
-      SHA (e.g. for pushes). Default is github.ref.
-    required: true
-    default: "${{ github.ref }}"
+      The ref to poll status checks on. If not specified, the head branch will
+      be used for PR events and github.sha otherwise.
+    required: false
   statuses:
     description: |
       A newline-separated list of status names to wait for. The Action will loop
@@ -16,7 +15,7 @@ inputs:
     required: true
   poll-seconds:
     description: |
-      Number of seconds to wait when polling current statuses.
+      Number of seconds to wait when polling current statuses. Default is 5.
     required: true
     default: 5
   poll-limit:

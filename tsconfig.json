@@ -14,7 +14,8 @@
     "removeComments": true,
     "module": "CommonJS",
     "esModuleInterop": true,
-    "strict": true
+    "strict": true,
+    "resolveJsonModule": true
   },
   "include": ["./src/**/*"],
   "exclude": ["./src/**/*.test.ts"]
