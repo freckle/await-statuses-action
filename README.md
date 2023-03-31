@@ -1,23 +1,35 @@
-# TypeScript Action Template
+# Await Statuses Action
 
-Our custom template repository for GitHub Actions implemented in TypeScript.
-
-[Creating a repository from a template][docs].
-
-[docs]: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-
-**NOTE**: Be sure to look for strings like "TODO" or "Action name" and update
-them accordingly.
+Await statuses on a ref. Succeed only when all succeed. Fail when any fail.
 
 ## Usage
 
+Run this step until three statuses have succeeded on the current ref:
+
 ```yaml
-- uses: freckle/TODO-action@v1
+- uses: freckle/await-status-action@v1
+  statuses: |
+    test-this
+    build-that
+    other / thing (that)
 ```
 
 ## Inputs and Outputs
 
+- **ref**: the reference (branch or SHA) to poll statuses on
+- **statuses**: status names to wait for, as a newline-separated string
+- **poll-seconds**: number of seconds between polls
+- **poll-limit**: maximum number of polls before giving up
+- **github-token**: token to use
+
 See [action.yml](./action.yml) for a complete list of inputs and outputs.
+
+## Caveats
+
+This action works by querying the GitHub API for check-suites and their
+check-runs. Statuses set directly on commits, and which only appear in the
+`/commits/status` API, will not be visible to this action. That's simply because
+the check-suite statuses are all _we_ need at the moment. Patches welcome.
 
 ## Versioning
 
