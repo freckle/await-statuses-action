@@ -1,7 +1,30 @@
-name: "Action name"
-description: "Action description"
-author: "Freckle"
+name: Await Statuses
+description: Wait for statuses on a given ref
+author: Freckle
 inputs:
+  ref:
+    description: |
+      The ref to poll status checks on. Can be a branch name (e.g. for PRs) or a
+      SHA (e.g. for pushes). Default is github.ref.
+    required: true
+    default: "${{ github.ref }}"
+  statuses:
+    description: |
+      A newline-separated list of status names to wait for. The Action will loop
+      until all statuses are successful (or attempts are exhausted). If any
+      statuses are failed, the Action will immediately fail.
+    required: true
+  poll-seconds:
+    description: |
+      Number of seconds to wait when polling current statuses.
+    required: true
+    default: 5
+  poll-limit:
+    description: |
+      Give up after polling this many times. The default is 1440, which works
+      out to 2 hours total with the default poll-seconds.
+    required: true
+    default: 1440
   github-token:
     description: "Override GitHub token, if necessary"
     required: true
