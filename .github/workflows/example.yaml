@@ -16,19 +16,11 @@ jobs:
     steps:
       - run: echo "Success"
 
-  failing-job:
-    runs-on: ubuntu-latest
-    steps:
-      - run: |
-          echo "Failure"
-          exit 1
 
   ignored-job:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          echo "Ignored"
-          exit 1
+      - run: echo "Ignored"
 
   example:
     runs-on: ubuntu-latest
@@ -40,13 +32,23 @@ jobs:
             slow-job
             success-job
 
-  failing-example:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./
-        with:
-          statuses: |
-            slow-job
-            success-job
-            failing-job
+  # This is not useful to run all the time and fail every PR, but can be
+  # uncommented to check the failing case ad-hoc.
+  #
+  # failing-job:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - run: |
+  #         echo "Failure"
+  #         exit 1
+  #
+  # failing-example:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: ./
+  #       with:
+  #         statuses: |
+  #           slow-job
+  #           success-job
+  #           failing-job
