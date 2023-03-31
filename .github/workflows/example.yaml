@@ -6,8 +6,47 @@ on:
     branches: main
 
 jobs:
+  slow-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sleep 120
+
+  success-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Success"
+
+  failing-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Failure"
+          exit 1
+
+  ignored-job:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Ignored"
+          exit 1
+
   example:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ./
+        with:
+          statuses: |
+            slow-job
+            success-job
+
+  failing-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          statuses: |
+            slow-job
+            success-job
+            failing-job
