@@ -11,7 +11,7 @@ export type Inputs = {
 export function getInputs(): Inputs {
   return {
     ref: core.getInput("ref", { required: false }),
-    statusNames: getInputSep("statuses", "\n"),
+    statusNames: core.getMultilineInput("statuses", { required: true }),
     pollSeconds: getInputNum("poll-seconds"),
     pollLimit: getInputNum("poll-limit"),
     githubToken: getInput("github-token"),
@@ -24,10 +24,4 @@ function getInput(name: string): string {
 
 function getInputNum(name: string): number {
   return parseInt(getInput(name), 10);
-}
-
-function getInputSep(name: string, sep: string): string[] {
-  return getInput(name)
-    .split(sep)
-    .map((x) => x.trim());
 }
