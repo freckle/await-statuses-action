@@ -125,7 +125,7 @@ var core = __importStar(__nccwpck_require__(2186));
 function getInputs() {
     return {
         ref: core.getInput("ref", { required: false }),
-        statusNames: getInputSep("statuses", "\n"),
+        statusNames: core.getMultilineInput("statuses", { required: true }),
         pollSeconds: getInputNum("poll-seconds"),
         pollLimit: getInputNum("poll-limit"),
         githubToken: getInput("github-token"),
@@ -137,11 +137,6 @@ function getInput(name) {
 }
 function getInputNum(name) {
     return parseInt(getInput(name), 10);
-}
-function getInputSep(name, sep) {
-    return getInput(name)
-        .split(sep)
-        .map(function (x) { return x.trim(); });
 }
 
 
