@@ -7,7 +7,7 @@ Await statuses on a ref. Succeed only when all succeed. Fail when any fail.
 Run this step until three statuses have succeeded on the current ref:
 
 ```yaml
-- uses: freckle/await-status-action@v1
+- uses: freckle/await-statuses-action@v1
   statuses: |
     test-this
     build-that
