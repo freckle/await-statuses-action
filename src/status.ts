@@ -1,8 +1,4 @@
-import * as github from "@actions/github";
-import { RestEndpointMethodTypes } from "@octokit/plugin-rest-endpoint-methods";
-
-import type { GitHubClient, CheckRun } from "./check-run";
-import { listCheckRunsForRef } from "./check-run";
+import type { CheckRun } from "./check-run";
 
 const SUCCESS_CONCLUSIONS = ["neutral", "skipped", "success"];
 const FAILURE_CONCLUSIONS = [
