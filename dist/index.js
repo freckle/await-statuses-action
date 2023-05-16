@@ -136,6 +136,7 @@ function getInputs() {
         statusNames: core.getMultilineInput("statuses", { required: true }),
         pollSeconds: getInputNum("poll-seconds"),
         pollLimit: getInputNum("poll-limit"),
+        format: core.getInput("format", { required: true }),
         githubToken: getInput("github-token"),
     };
 }
@@ -155,6 +156,21 @@ function getInputNum(name) {
 
 "use strict";
 
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -220,15 +236,24 @@ var github = __importStar(__nccwpck_require__(5438));
 var inputs_1 = __nccwpck_require__(6180);
 var status_1 = __nccwpck_require__(5646);
 var check_run_1 = __nccwpck_require__(5307);
+var StatusesError = (function (_super) {
+    __extends(StatusesError, _super);
+    function StatusesError(message, statuses) {
+        var _this = _super.call(this, message) || this;
+        _this.statuses = statuses;
+        return _this;
+    }
+    return StatusesError;
+}(Error));
 function run() {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var _b, ref, statusNames, pollSeconds, pollLimit, githubToken, prRef, shaRef, statusRef, client, i, checkRuns, statuses, error_1;
+        var _b, ref, statusNames, pollSeconds, pollLimit, format, githubToken, prRef, shaRef, statusRef, client, i, checkRuns, statuses, error_1;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
-                    _c.trys.push([0, 7, , 8]);
-                    _b = (0, inputs_1.getInputs)(), ref = _b.ref, statusNames = _b.statusNames, pollSeconds = _b.pollSeconds, pollLimit = _b.pollLimit, githubToken = _b.githubToken;
+                    _c.trys.push([0, 6, , 7]);
+                    _b = (0, inputs_1.getInputs)(), ref = _b.ref, statusNames = _b.statusNames, pollSeconds = _b.pollSeconds, pollLimit = _b.pollLimit, format = _b.format, githubToken = _b.githubToken;
                     prRef = (_a = github.context.payload.pull_request) === null || _a === void 0 ? void 0 : _a.head.ref;
                     shaRef = github.context.sha;
                     statusRef = ref !== null && ref.trim() !== "" ? ref : prRef !== null && prRef !== void 0 ? prRef : shaRef;
@@ -236,38 +261,57 @@ function run() {
                         throw new Error("Unable to determine ref. Input: ".concat(ref, ", PullRequest: ").concat(prRef, ", SHA: ").concat(shaRef));
                     }
                     core.info("Awaiting ".concat(statusNames.length, " statuse(s) on ").concat(statusRef));
+                    core.debug("Polling up to ".concat(pollLimit, " times every ").concat(pollSeconds, "s"));
                     client = github.getOctokit(githubToken);
                     i = 1;
                     _c.label = 1;
                 case 1:
                     if (false) {}
-                    if (i > pollLimit) {
-                        throw new Error("Poll limit reached (".concat(i, " > ").concat(pollLimit, ")"));
-                    }
                     return [4, (0, check_run_1.listCheckRunsForRef)(client, statusRef)];
                 case 2:
                     checkRuns = _c.sent();
-                    return [4, (0, status_1.checkRunsToStatuses)(checkRuns, statusNames)];
-                case 3:
-                    statuses = _c.sent();
-                    logStatuses(statuses);
+                    statuses = (0, status_1.checkRunsToStatuses)(checkRuns, statusNames);
                     if (requirementsMet(statuses)) {
-                        core.info("All statuses successful");
+                        switch (format) {
+                            case "rich":
+                                logStatuses(statuses);
+                                break;
+                            case "brief":
+                                process.stdout.write("\n");
+                                break;
+                        }
+                        core.info("All requirements met");
                         return [2];
                     }
-                    core.info("Some statuses are still pending");
-                    core.info("Polling again in ".concat(pollSeconds, " second(s)"));
+                    if (i > pollLimit) {
+                        throw new StatusesError("Poll limit reached", statuses);
+                    }
+                    switch (format) {
+                        case "rich":
+                            logStatuses(statuses);
+                            core.info("Some statuses are still pending");
+                            core.info("Polling again in ".concat(pollSeconds, " second(s)"));
+                            break;
+                        case "brief":
+                            process.stdout.write(".");
+                            break;
+                    }
                     return [4, sleep(pollSeconds)];
-                case 4:
+                case 3:
                     _c.sent();
-                    _c.label = 5;
-                case 5:
+                    _c.label = 4;
+                case 4:
                     i++;
                     return [3, 1];
-                case 6: return [3, 8];
-                case 7:
+                case 5: return [3, 7];
+                case 6:
                     error_1 = _c.sent();
-                    if (error_1 instanceof Error) {
+                    process.stdout.write("\n");
+                    if (error_1 instanceof StatusesError) {
+                        logStatuses(error_1.statuses);
+                        core.setFailed(error_1.message);
+                    }
+                    else if (error_1 instanceof Error) {
                         core.setFailed(error_1.message);
                     }
                     else if (typeof error_1 === "string") {
@@ -276,8 +320,8 @@ function run() {
                     else {
                         core.setFailed("Non-Error exception");
                     }
-                    return [3, 8];
-                case 8: return [2];
+                    return [3, 7];
+                case 7: return [2];
             }
         });
     });
@@ -294,10 +338,10 @@ function logStatuses(_a) {
         core.info("  ".concat(s, " is \u001B[33mpending\u001B[0m"));
     });
 }
-function requirementsMet(_a) {
-    var pending = _a.pending, failed = _a.failed;
+function requirementsMet(statuses) {
+    var pending = statuses.pending, failed = statuses.failed;
     if (failed.length > 0) {
-        throw new Error("Some required statuses have failed: ".concat(failed.join(", ")));
+        throw new StatusesError("Some required statuses have failed", statuses);
     }
     return pending.length === 0;
 }
