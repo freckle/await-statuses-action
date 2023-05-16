@@ -6,6 +6,15 @@ import type { Statuses } from "./status";
 import { checkRunsToStatuses } from "./status";
 import { listCheckRunsForRef } from "./check-run";
 
+class StatusesError extends Error {
+  statuses: Statuses;
+
+  constructor(message: string, statuses: Statuses) {
+    super(message);
+    this.statuses = statuses;
+  }
+}
+
 async function run() {
   try {
     const { ref, statusNames, pollSeconds, pollLimit, githubToken } =
@@ -26,10 +35,6 @@ async function run() {
     const client = github.getOctokit(githubToken);
 
     for (let i = 1; true; i++) {
-      if (i > pollLimit) {
-        throw new Error(`Poll limit reached (${i} > ${pollLimit})`);
-      }
-
       const checkRuns = await listCheckRunsForRef(client, statusRef);
       const statuses = await checkRunsToStatuses(checkRuns, statusNames);
 
@@ -40,12 +45,19 @@ async function run() {
         return;
       }
 
+      if (i > pollLimit) {
+        throw new StatusesError("Poll limit reached", statuses);
+      }
+
       core.info("Some statuses are still pending");
       core.info(`Polling again in ${pollSeconds} second(s)`);
       await sleep(pollSeconds);
     }
   } catch (error) {
-    if (error instanceof Error) {
+    if (error instanceof StatusesError) {
+      logStatuses(error.statuses);
+      core.setFailed(error.message);
+    } else if (error instanceof Error) {
       core.setFailed(error.message);
     } else if (typeof error === "string") {
       core.setFailed(error);
@@ -69,9 +81,11 @@ function logStatuses({ pending, succeeded, failed }: Statuses): void {
   });
 }
 
-function requirementsMet({ pending, failed }: Statuses): boolean {
+function requirementsMet(statuses: Statuses): boolean {
+  const { pending, failed } = statuses;
+
   if (failed.length > 0) {
-    throw new Error(`Some required statuses have failed: ${failed.join(", ")}`);
+    throw new StatusesError("Some required statuses have failed", statuses);
   }
 
   return pending.length === 0;
