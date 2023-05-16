@@ -37,7 +37,7 @@ async function run() {
 
     for (let i = 1; true; i++) {
       const checkRuns = await listCheckRunsForRef(client, statusRef);
-      const statuses = await checkRunsToStatuses(checkRuns, statusNames);
+      const statuses = checkRunsToStatuses(checkRuns, statusNames);
 
       logStatuses(statuses);
 
