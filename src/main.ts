@@ -31,6 +31,7 @@ async function run() {
     }
 
     core.info(`Awaiting ${statusNames.length} statuse(s) on ${statusRef}`);
+    core.debug(`Polling up to ${pollLimit} times every ${pollSeconds}s`);
 
     const client = github.getOctokit(githubToken);
 
