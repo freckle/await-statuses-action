@@ -17,7 +17,7 @@ class StatusesError extends Error {
 
 async function run() {
   try {
-    const { ref, statusNames, pollSeconds, pollLimit, githubToken } =
+    const { ref, statusNames, pollSeconds, pollLimit, format, githubToken } =
       getInputs();
 
     const prRef = github.context.payload.pull_request?.head.ref;
@@ -39,10 +39,17 @@ async function run() {
       const checkRuns = await listCheckRunsForRef(client, statusRef);
       const statuses = checkRunsToStatuses(checkRuns, statusNames);
 
-      logStatuses(statuses);
-
       if (requirementsMet(statuses)) {
-        core.info("All statuses successful");
+        switch (format) {
+          case "rich":
+            logStatuses(statuses);
+            break;
+          case "brief":
+            process.stdout.write("\n");
+            break;
+        }
+
+        core.info("All requirements met");
         return;
       }
 
@@ -50,11 +57,22 @@ async function run() {
         throw new StatusesError("Poll limit reached", statuses);
       }
 
-      core.info("Some statuses are still pending");
-      core.info(`Polling again in ${pollSeconds} second(s)`);
+      switch (format) {
+        case "rich":
+          logStatuses(statuses);
+          core.info("Some statuses are still pending");
+          core.info(`Polling again in ${pollSeconds} second(s)`);
+          break;
+        case "brief":
+          process.stdout.write(".");
+          break;
+      }
+
       await sleep(pollSeconds);
     }
   } catch (error) {
+    process.stdout.write("\n");
+
     if (error instanceof StatusesError) {
       logStatuses(error.statuses);
       core.setFailed(error.message);
