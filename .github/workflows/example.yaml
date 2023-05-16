@@ -32,6 +32,17 @@ jobs:
             slow-job
             success-job
 
+  example-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./
+        with:
+          format: brief
+          statuses: |
+            slow-job
+            success-job
+
   # This is not useful to run all the time and fail every PR, but can be
   # uncommented to check the failing case ad-hoc.
   #
