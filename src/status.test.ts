@@ -1,6 +1,3 @@
-import * as fs from "fs";
-import * as github from "@actions/github";
-
 import { checkRunsToStatuses } from "./status";
 import TEST_CHECK_RUNS from "./fixtures/megarepo-check-runs.json";
 
