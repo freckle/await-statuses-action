@@ -24,6 +24,27 @@ Run this step until three statuses have succeeded on the current ref:
 
 See [action.yml](./action.yml) for a complete list of inputs and outputs.
 
+## Optional Statuses
+
+Elements in the `statuses` list may optionally be suffixed by any number of
+spaces and a `?`. This makes it acceptable if they never appear, but will still
+consider it a failure if they do appear as failed. This can be useful for matrix
+jobs whose statuses never appear in certain skipped scenarios, but we still want
+to account for them if they fail.
+
+Changing our usage example to:
+
+```yaml
+- uses: freckle/await-statuses-action@v1
+  statuses: |
+    test-this
+    build-that
+    other / thing (that) ?
+```
+
+This will result in us proceeding even if `other / thing (that)` never shows up,
+but if it ever shows up as failed, we will still fail immediately.
+
 ## Caveats
 
 This action works by querying the GitHub API for check-suites and their

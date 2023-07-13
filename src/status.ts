@@ -20,13 +20,26 @@ export function checkRunsToStatuses(
   checkRuns: CheckRun[],
   statusNames: string[]
 ): Statuses {
+  const allStatusNames: string[] = [];
+  const waitForStatusNames: string[] = [];
+
+  for (const statusName of statusNames) {
+    if (statusName.endsWith("?")) {
+      const trimmed = statusName.slice(0, -1).trim();
+      allStatusNames.push(trimmed);
+    } else {
+      allStatusNames.push(statusName);
+      waitForStatusNames.push(statusName);
+    }
+  }
+
   const all: string[] = [];
   const pending: string[] = [];
   const succeeded: string[] = [];
   const failed: string[] = [];
 
   checkRuns.forEach((run) => {
-    if (!includes(statusNames, run.name)) {
+    if (!includes(allStatusNames, run.name)) {
       return; // Not required, don't care
     }
 
@@ -53,8 +66,8 @@ export function checkRunsToStatuses(
     );
   });
 
-  // Add any statuses that we didn't see at all as pending
-  statusNames.forEach((name) => {
+  // Add statuses that we didn't see at all as pending
+  waitForStatusNames.forEach((name) => {
     if (!includes(all, name)) {
       pending.push(name);
     }
