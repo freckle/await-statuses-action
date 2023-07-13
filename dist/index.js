@@ -371,12 +371,25 @@ var FAILURE_CONCLUSIONS = [
     "timed_out",
 ];
 function checkRunsToStatuses(checkRuns, statusNames) {
+    var allStatusNames = [];
+    var waitForStatusNames = [];
+    for (var _i = 0, statusNames_1 = statusNames; _i < statusNames_1.length; _i++) {
+        var statusName = statusNames_1[_i];
+        if (statusName.endsWith("?")) {
+            var trimmed = statusName.slice(0, -1).trim();
+            allStatusNames.push(trimmed);
+        }
+        else {
+            allStatusNames.push(statusName);
+            waitForStatusNames.push(statusName);
+        }
+    }
     var all = [];
     var pending = [];
     var succeeded = [];
     var failed = [];
     checkRuns.forEach(function (run) {
-        if (!includes(statusNames, run.name)) {
+        if (!includes(allStatusNames, run.name)) {
             return;
         }
         all.push(run.name);
@@ -391,7 +404,7 @@ function checkRunsToStatuses(checkRuns, statusNames) {
         }
         throw new Error("Unexpected CheckRun conclusion: ".concat(run.conclusion, ". Must be one of ").concat(SUCCESS_CONCLUSIONS.concat(FAILURE_CONCLUSIONS).join(", ")));
     });
-    statusNames.forEach(function (name) {
+    waitForStatusNames.forEach(function (name) {
         if (!includes(all, name)) {
             pending.push(name);
         }
