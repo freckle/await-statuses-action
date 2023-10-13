@@ -17,7 +17,7 @@ async function run() {
 
     if (!statusRef) {
       throw new Error(
-        `Unable to determine ref. Input: ${ref}, PullRequest: ${prRef}, SHA: ${shaRef}`
+        `Unable to determine ref. Input: ${ref}, PullRequest: ${prRef}, SHA: ${shaRef}`,
       );
     }
 
