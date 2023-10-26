@@ -1,4 +1,5 @@
 import type { CheckRun } from "./check-run";
+import type { StatusPattern } from "./status-pattern";
 
 const SUCCESS_CONCLUSIONS = ["neutral", "skipped", "success"];
 const FAILURE_CONCLUSIONS = [
@@ -18,32 +19,19 @@ export type Statuses = {
 
 export function checkRunsToStatuses(
   checkRuns: CheckRun[],
-  statusNames: string[]
+  patterns: StatusPattern[],
 ): Statuses {
-  const allStatusNames: string[] = [];
-  const waitForStatusNames: string[] = [];
-
-  for (const statusName of statusNames) {
-    if (statusName.endsWith("?")) {
-      const trimmed = statusName.slice(0, -1).trim();
-      allStatusNames.push(trimmed);
-    } else {
-      allStatusNames.push(statusName);
-      waitForStatusNames.push(statusName);
-    }
-  }
-
-  const all: string[] = [];
+  const seen: string[] = [];
   const pending: string[] = [];
   const succeeded: string[] = [];
   const failed: string[] = [];
 
   checkRuns.forEach((run) => {
-    if (!includes(allStatusNames, run.name)) {
+    if (none(patterns, (p) => p.match(run.name))) {
       return; // Not required, don't care
     }
 
-    all.push(run.name);
+    seen.push(run.name);
 
     if (run.conclusion === null) {
       return pending.push(run.name);
@@ -61,15 +49,15 @@ export function checkRunsToStatuses(
       `Unexpected CheckRun conclusion: ${
         run.conclusion
       }. Must be one of ${SUCCESS_CONCLUSIONS.concat(FAILURE_CONCLUSIONS).join(
-        ", "
-      )}`
+        ", ",
+      )}`,
     );
   });
 
   // Add statuses that we didn't see at all as pending
-  waitForStatusNames.forEach((name) => {
-    if (!includes(all, name)) {
-      pending.push(name);
+  patterns.forEach((p) => {
+    if (!p.optional && !p.matchAny(seen)) {
+      pending.push(p.raw);
     }
   });
 
@@ -82,4 +70,14 @@ export function checkRunsToStatuses(
 
 function includes<T>(xs: Array<T>, x: T): boolean {
   return xs.indexOf(x) !== -1;
+}
+
+function none<T>(xs: Array<T>, fn: (x: T) => boolean): boolean {
+  for (const x of xs) {
+    if (fn(x)) {
+      return false;
+    }
+  }
+
+  return true;
 }
