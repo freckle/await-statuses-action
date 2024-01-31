@@ -35,8 +35,12 @@ inputs:
     required: true
     default: "${{ github.token }}"
 outputs:
+  succeeded-statuses:
+    description: Comma-separated list of succeeded statuses at step completion
+  pending-statuses:
+    description: Comma-separated list of pending statuses at step completion
   failed-statuses:
-    description: Comma-separated list of failed statuses
+    description: Comma-separated list of failed statuses at step completion
 runs:
   using: "node20"
   main: "dist/index.js"
