@@ -94,6 +94,7 @@ function requirementsMet(statuses: Statuses): boolean {
 
   if (failed.length > 0) {
     logStatuses({ pending: [], succeeded: [], failed });
+    core.setOutput("failed-statuses", failed.join(", "));
     throw new Error("Some required statuses have failed");
   }
 
