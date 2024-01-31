@@ -46,6 +46,7 @@ async function run() {
 
       if (i > pollLimit) {
         logStatuses(statuses);
+        setStatusOutputs(statuses);
         throw new Error("Poll limit reached");
       }
 
@@ -75,6 +76,12 @@ async function run() {
   }
 }
 
+function setStatusOutputs({ pending, succeeded, failed }: Statuses): void {
+  core.setOutput("pending-statuses", pending.join(", "));
+  core.setOutput("succeeded-statuses", succeeded.join(", "));
+  core.setOutput("failed-statuses", failed.join(", "));
+}
+
 function logStatuses({ pending, succeeded, failed }: Statuses): void {
   succeeded.sort().forEach((s) => {
     core.info(`\u001b[32m✓\u001b[0m ${s} has \u001b[32msucceeded\u001b[0m`);
@@ -94,7 +101,7 @@ function requirementsMet(statuses: Statuses): boolean {
 
   if (failed.length > 0) {
     logStatuses({ pending: [], succeeded: [], failed });
-    core.setOutput("failed-statuses", failed.join(", "));
+    setStatusOutputs(statuses);
     throw new Error("Some required statuses have failed");
   }
 
