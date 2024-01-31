@@ -34,6 +34,9 @@ inputs:
     description: "Override GitHub token, if necessary"
     required: true
     default: "${{ github.token }}"
+outputs:
+  failed-statuses:
+    description: Comma-separated list of failed statuses
 runs:
   using: "node20"
   main: "dist/index.js"
