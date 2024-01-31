@@ -261,6 +261,7 @@ function run() {
                     }
                     if (i > pollLimit) {
                         logStatuses(statuses);
+                        setStatusOutputs(statuses);
                         throw new Error("Poll limit reached");
                     }
                     switch (format) {
@@ -299,6 +300,12 @@ function run() {
         });
     });
 }
+function setStatusOutputs(_a) {
+    var pending = _a.pending, succeeded = _a.succeeded, failed = _a.failed;
+    core.setOutput("pending-statuses", pending.join(", "));
+    core.setOutput("succeeded-statuses", succeeded.join(", "));
+    core.setOutput("failed-statuses", failed.join(", "));
+}
 function logStatuses(_a) {
     var pending = _a.pending, succeeded = _a.succeeded, failed = _a.failed;
     succeeded.sort().forEach(function (s) {
@@ -315,7 +322,7 @@ function requirementsMet(statuses) {
     var pending = statuses.pending, failed = statuses.failed;
     if (failed.length > 0) {
         logStatuses({ pending: [], succeeded: [], failed: failed });
-        core.setOutput("failed-statuses", failed.join(", "));
+        setStatusOutputs(statuses);
         throw new Error("Some required statuses have failed");
     }
     return pending.length === 0;
