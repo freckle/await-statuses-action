@@ -16,7 +16,7 @@
   "author": "Freckle",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.11.0",
+    "@actions/core": "^1.11.1",
     "@actions/github": "^6.0.0"
   },
   "devDependencies": {
