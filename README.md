@@ -8,10 +8,11 @@ Run this step until three statuses have succeeded on the current ref:
 
 ```yaml
 - uses: freckle/await-statuses-action@v1
-  statuses: |
-    test-this
-    build-that
-    other / thing (that)
+  with:
+    statuses: |
+      test-this
+      build-that
+      other / thing (that)
 ```
 
 ## Inputs and Outputs
@@ -36,10 +37,11 @@ Changing our usage example to:
 
 ```yaml
 - uses: freckle/await-statuses-action@v1
-  statuses: |
-    test-this
-    build-that
-    other / thing (that) ?
+  with:
+    statuses: |
+      test-this
+      build-that
+      other / thing (that) ?
 ```
 
 This will result in us proceeding even if `other / thing (that)` never shows up,
