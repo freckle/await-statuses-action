@@ -1,5 +1,5 @@
-import { checkRunsToStatuses } from "./status";
-import TEST_CHECK_RUNS from "./fixtures/megarepo-check-runs.json";
+import { checkRunsToStatuses } from "./status.js";
+import TEST_CHECK_RUNS from "./fixtures/megarepo-check-runs.json" with { type: "json" };
 
 test("For an example ref on megarepo", async () => {
   const statuses = checkRunsToStatuses(TEST_CHECK_RUNS, [

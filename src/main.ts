@@ -1,10 +1,10 @@
 import * as core from "@actions/core";
 import * as github from "@actions/github";
 
-import { getInputs } from "./inputs";
-import type { Statuses } from "./status";
-import { checkRunsToStatuses } from "./status";
-import { listCheckRunsForRef } from "./check-run";
+import { getInputs } from "./inputs.js"
+import type { Statuses } from "./status.js"
+import { checkRunsToStatuses } from "./status.js"
+import { listCheckRunsForRef } from "./check-run.js"
 
 async function run() {
   try {
