@@ -42,5 +42,5 @@ outputs:
   failed-statuses:
     description: Comma-separated list of failed statuses at step completion
 runs:
-  using: "node20"
+  using: "node24"
   main: "dist/index.js"
