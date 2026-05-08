@@ -23,7 +23,7 @@
   "devDependencies": {
     "@actions/glob": "^0.7.0",
     "@octokit/types": "^16.0.0",
-    "@types/node": "^24.12.2",
+    "@types/node": "^24.12.3",
     "@vercel/ncc": "^0.38.4",
     "eslint": "^10.3.0",
     "jsdom": "^29.1.1",
