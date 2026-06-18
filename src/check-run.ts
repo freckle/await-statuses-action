@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import * as github from "@actions/github";
 
 export type GitHubClient = ReturnType<typeof github.getOctokit>;
@@ -18,6 +19,9 @@ export async function listCheckRunsForRef(
   });
 
   const response: CheckRun[] = await client.paginate(options);
+
+  core.debug(`GitHub API response for ref ${ref}:`);
+  core.debug(JSON.stringify(response, null, 2));
 
   return response;
 }
