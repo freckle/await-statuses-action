@@ -24,7 +24,7 @@
     "@actions/glob": "^0.7.0",
     "@octokit/types": "^16.0.0",
     "@types/node": "^24.13.2",
-    "@vercel/ncc": "^0.44.0",
+    "@vercel/ncc": "^0.44.1",
     "eslint": "^10.6.0",
     "jsdom": "^29.1.1",
     "prettier": "^3.8.5",
