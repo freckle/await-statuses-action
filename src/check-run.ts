@@ -1,27 +1,24 @@
-import * as core from "@actions/core";
-import * as github from "@actions/github";
+import * as core from '@actions/core'
+import * as github from '@actions/github'
 
-export type GitHubClient = ReturnType<typeof github.getOctokit>;
+export type GitHubClient = ReturnType<typeof github.getOctokit>
 
 export type CheckRun = {
-  name: string;
-  status: string;
-  conclusion: string | null;
-};
+  name: string
+  status: string
+  conclusion: string | null
+}
 
-export async function listCheckRunsForRef(
-  client: GitHubClient,
-  ref: string
-): Promise<CheckRun[]> {
+export async function listCheckRunsForRef(client: GitHubClient, ref: string): Promise<CheckRun[]> {
   const options = client.rest.checks.listForRef.endpoint.merge({
     ...github.context.repo,
-    ref: ref,
-  });
+    ref: ref
+  })
 
-  const response: CheckRun[] = await client.paginate(options);
+  const response: CheckRun[] = await client.paginate(options)
 
-  core.debug(`GitHub API response for ref ${ref}:`);
-  core.debug(JSON.stringify(response, null, 2));
+  core.debug(`GitHub API response for ref ${ref}:`)
+  core.debug(JSON.stringify(response, null, 2))
 
-  return response;
+  return response
 }
