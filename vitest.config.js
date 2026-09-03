@@ -10,8 +10,9 @@ export default defineConfig({
       // all + include: report every src file, not just ones a test loaded
       all: true,
       include: ["src/**/*.ts"],
-      // main.ts is thin wiring, covered by the integration CI job instead
-      exclude: ["src/main.ts"],
+      // Thin wiring over @actions/* and the Octokit client, covered by the
+      // integration CI job instead
+      exclude: ["src/main.ts", "src/inputs.ts", "src/check-run.ts"],
       // Remove to stop enforcing coverage (also revert ci.yml's pnpm coverage -> pnpm test)
       thresholds: {
         lines: 70,
