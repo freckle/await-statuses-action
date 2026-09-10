@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
 
-export type Format = "rich" | "brief";
+type Format = "rich" | "brief";
 
 export type Inputs = {
   ref: string | null;
