@@ -26,7 +26,7 @@ async function run() {
 
     const client = github.getOctokit(githubToken);
 
-    for (let i = 1; true; i++) {
+    for (let i = 1; ; i++) {
       const checkRuns = await listCheckRunsForRef(client, statusRef);
       const statuses = checkRunsToStatuses(checkRuns, statusNames);
 
